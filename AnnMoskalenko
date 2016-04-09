@@ -1,0 +1,114 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+using namespace std;
+//directory - создание файла
+//dynamin_poinnter_cast ???
+
+class Directory;
+
+class File
+{
+	string name;
+	int NumInTree;
+public:
+	File(){};
+	File(string name_v) : name(name_v){};
+	File& createFile(string name_v)
+	{
+		File* obj = new File(name_v);
+	}
+	friend Directory;
+
+	~File(){};
+};
+
+class Directory
+{
+	string name;
+	Directory* dirs[256]; //массив указателей на директории из данной директории
+	File* files[256]; //массив указателей на файлы в этой директории
+public:
+	Directory(){};
+	Directory(string name_v) : name(name_v) {
+		for (int i = 0; i < 256; i++)
+		{
+			dirs[i] = nullptr;
+		}
+	}
+	Directory* createDirectory(string name_v)
+	{//создает новую диркеторию внутри текущей
+		int i = 0;
+		Directory* obj = new Directory(name_v);
+		while (dirs[i] != nullptr)
+		{
+			i++;
+		}
+		if (i == 256)
+			throw; //тут будет исключение
+		else
+			dirs[i++] = obj;
+		return obj;
+	}
+	void deleteDirectory(string name_v)
+	{//удаляет указанную диркеторию внутри текущей
+		int i = 0;
+		while (dirs[i]->name != name_v)
+		{
+			i++;
+		}
+		delete dirs[i];
+		dirs[i] = 0;
+	}
+	void deleteFile(string name_v)
+	{//удаляет указанный файл внутри текущей директории
+		int i = 0;
+		while (files[i]->name != name_v)
+		{
+			i++;
+		}
+		delete files[i];
+		files[i] = 0;
+	}
+	File* findFile(string name_v)
+	{//наxодит указанный файл внутри текущей директории, не заходя в лежащие в ней директории
+		int k = 0;
+		int n = 0;
+		for (int i = 0; i < 256; i++)
+		{
+			if (files[i]->name == name_v)
+			{
+				k++;
+				i = n;
+			}
+		}
+		if (k > 1)
+			throw; //тут будет исключение
+		else
+			return files[n];
+	}
+
+	~Directory()
+	{
+		for (int i = 0; i < sizeof(dirs) / sizeof(dirs[0]); i++)
+		{
+			delete dirs[i];
+		}
+		for (int i = 0; i < sizeof(files) / sizeof(files[0]); i++)
+		{
+			delete files[i];
+		}
+	}
+};
+
+
+
+int main()
+{
+	vector<vector <int*>> treeArr;
+
+
+	system("pause");
+	return 0;
+}
