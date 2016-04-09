@@ -1,0 +1,83 @@
+// LB5.cpp: определяет точку входа для консольного приложения.
+
+#include "stdafx.h"
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+using namespace std;
+class FileSystem
+{
+public:
+	string Dir_Name;
+	string File_Name;
+virtual	~FileSystem() {};
+};
+class File : public FileSystem 
+{
+public:
+	File() {};
+	File(string file_name) { File_Name= file_name; }
+	~File() {};
+};
+class Directory : public FileSystem
+{
+	vector < shared_ptr<FileSystem> >Files;
+
+public:
+	Directory(string name) { Dir_Name = name; };
+//create
+	void addFile(shared_ptr<File>& file) 
+	{
+		Files.push_back(dynamic_pointer_cast<FileSystem>(file));
+	}
+	void addDir(shared_ptr<Directory>&file) 
+	{
+		Files.push_back(dynamic_pointer_cast<FileSystem>(file));
+	}
+	//finding file
+	vector<shared_ptr<FileSystem>> Find_File(string filename)
+	{
+		int a=0;
+		vector<shared_ptr<FileSystem>> finder;
+		for (auto i = Files.begin(); i != Files.end(); i++)
+		{
+			if ((*i)->File_Name == filename)
+			{
+				finder.push_back(*i);
+				a++;
+			}
+		}
+		for (int j = 0; j= a; j++) 
+		{
+			cout << finder[j];
+			if (a== 0) { cout << "File wasn't found"; }
+		}
+		return finder;
+	}
+	//delete
+	//...
+};
+
+int main()
+{
+ //	setlocale(LC_ALL, "rus");
+	
+	shared_ptr<Directory> directory1(new Directory("first one"));
+	cout << "Repository #1 was created"<<endl;
+	shared_ptr <File> file1(new File("my file1"));
+	directory1->addFile(file1);
+	cout << "File was added"<<endl;
+	
+	shared_ptr<Directory> directory2(new Directory("second one"));
+	cout << "Repository #2 was created" << endl;
+	shared_ptr <File> file2(new File("my file2"));
+	shared_ptr<File> file3(new File("my file3"));	
+		directory2->addFile(file2);
+		cout << "File 2  was added" << endl;
+		directory2->addFile(file3);
+		cout << "File 3 was added" << endl;
+	    directory2->Find_File("my file3");
+    return 0;
+}
+
