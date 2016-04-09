@@ -1,0 +1,129 @@
+#include "stdafx.h"
+#include <iostream>
+#include <stdlib.h>
+#include <vector>
+#include <string>
+#include <memory.>
+#include <clocale>
+using namespace std;
+
+class File_S
+{  protected:
+     string Name_D;
+	 string Name_F;
+   public:
+	  File_S() {};
+	  virtual ~File_S() {};
+};
+
+class File : public File_S
+{ 
+   public:
+	   File() {};
+	   File(string name)
+	   {
+		   Name_F = name;
+	   };
+	virtual  ~File() {};
+};
+
+
+class Directory : public File_S
+{  
+	vector<shared_ptr<File_S>> files;
+	
+  public:
+	Directory(int n) 
+	{
+		;
+	};
+
+	/*Directory(int m)
+	{
+		;
+	};*/
+		
+     Directory(string name) 
+		{ 
+			Name_D = name; 
+		};
+	void createDirectory(shared_ptr<Directory>& file)  //создание директории
+		{
+			files.push_back(dynamic_pointer_cast<File_S>(file));
+		
+		}
+	
+	void createFile(shared_ptr<File>& file)   //создание элемента
+	{
+
+		files.push_back(dynamic_pointer_cast<File_S>(file));
+
+	}
+		
+	
+	
+	vector<shared_ptr<File_S>> list() 
+		{ 
+			return files ;
+		}
+
+	void delFile(int n)   // удаление элемента
+	{
+		
+        files.erase(files.begin() + n);
+	};
+
+	void findFile(int n) // поиск элемента по индексу
+	{   
+		files.at(files.begin() + n);
+	}
+	
+};
+
+
+class Label : public File_S
+{
+  protected:
+	  ;
+  public:
+	  Label() {};
+	  ~Label() {};
+};
+
+
+
+
+int main(int argc, char* argv[])
+{
+	int n,m;
+	setlocale(LC_ALL, "rus");
+    
+	shared_ptr<Directory> directory(new Directory("first created directory"));
+	cout << "The first directory was created" << endl; 
+
+	shared_ptr<File> file1(new File("1 created file"));
+	cout << "The 1 file was created" << endl;
+    shared_ptr<File> file2(new File("2 created file"));
+	cout << "The 2 file was created" << endl;
+	shared_ptr<File> file3(new File("3 created file"));
+	cout << "The 3 file was created" << endl;
+	shared_ptr<File> file4(new File("4 created file"));
+	cout << "The 4 file was created" << endl;
+	shared_ptr<File> file5(new File("5 created file"));
+	cout << "The 5 file was created" << endl;
+	shared_ptr<File> file6(new File("6 created file"));
+	cout << "The 6 file was created" << endl;
+	
+
+    cout << "Введите номер элемента,который хотите удалить \n"; //удаление выбранного элемента
+	cin >> n;
+	Directory* p = new Directory(n);
+	p->delFile(n);
+
+    
+	cout << "\n Введите номер элемента,который вы хотите найти \n"; //поиск эл-та по индексу
+	cin >> n;
+	Directory* pp = new Directory(n);
+	pp->findFile(n);
+	system("pause");
+}
