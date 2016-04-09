@@ -10,6 +10,7 @@
 #include <fstream>
 #include <vector>
 using namespace std;
+//more comments
 /*
 class File
 class directoty - создание, размещение в директории содержит массив объектов
