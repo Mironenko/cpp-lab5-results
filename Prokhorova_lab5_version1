@@ -1,0 +1,137 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+
+class FileItem
+{
+protected:
+	std::string _name;
+public:
+	FileItem() : _name("default") { }
+	FileItem(std::string name) : _name(name) { }
+	std::string getName() const { return _name; }
+	//FileItem& operator=(
+	virtual ~FileItem() {}
+};
+
+class Directory : public FileItem
+{
+private:
+	std::vector<File*> _files;
+	std::vector<Directory*> _directories;
+	Directory* _root;
+public:
+	Directory() : FileItem(), _files(0), _directories(0) { }
+	Directory(std::string name) : FileItem(name) { }
+	void addFile(File* file); // добавление файла в текущую директорию
+	void addDirectory(Directory* dir); // добавление директории в текущую директорию
+	std::vector<File*> listOfFiles() const; 
+	std::vector<Directory*> listOfDirectories() const;
+	Directory* findDirectory(std::string name) const;
+	File* findFile(std::string name) const;
+	void printNames() const;
+	bool removeFile(std::string name);
+	~Directory() {}
+};
+
+void Directory::addFile(File* file)
+{
+	_files.push_back(file);
+
+}
+
+void Directory::addDirectory(Directory* dir)
+{
+	_directories.push_back(dir);
+}
+
+std::vector<File*> Directory::listOfFiles() const
+{
+	return _files;
+}
+
+std::vector<Directory*> Directory::listOfDirectories() const
+{
+	return _directories;
+}
+
+Directory* Directory::findDirectory(std::string name) const
+{
+	for (int i = 0; i < _directories.size(); i++)
+	{
+		if (_directories[i]->getName() == name)
+			return _directories[i];
+	}
+	throw std::runtime_error("Directory is not found");
+}
+
+File* Directory::findFile(std::string name) const
+{
+	for (int i = 0; i < _files.size(); i++)
+	{
+		if (_files[i]->getName() == name)
+			return _files[i];
+	}
+	throw std::runtime_error("File is not found");
+}
+
+void Directory::printNames() const
+{
+	std::cout << "Directories:\n";
+	for (int i = 0; i < _directories.size(); i++)
+		std::cout << _directories[i]->getName() << std::endl;
+	std::cout << "Files:\n";
+	for (int i = 0; i < _files.size(); i++)
+		std::cout << _files[i]->getName() << std::endl;
+}
+
+bool Directory::removeFile(std::string name)
+{
+	int pos = -1;
+	for (int i = 0; i < _files.size(); i++)
+	{
+		if (_files[i]->getName() == name)
+		{
+			pos = i;
+			break;
+		}
+	}
+	if (pos == -1)
+		return false;
+	for (int i = pos + 1; i < _files.size(); i++)
+	{
+		if (_files[i]->getName() == name)
+			return false;
+	}
+	delete _files[pos];
+	return true;
+}
+
+int main()
+{
+	try 
+	{
+		Directory dir1("Root");
+		File* file1 = new File("File1");
+		File* file2 = new File("File2");
+		dir1.addFile(file1);
+		dir1.addFile(file2);
+		Directory* dir2 = new Directory("Dir2");
+		dir1.addDirectory(dir2);
+		dir1.printNames();
+		File* f = dir1.findFile("File1");
+		Directory* dir3 = new Directory("Dir3");
+		dir3->addFile(f);
+		dir3->printNames();
+		dir3->removeFile("File1");
+		dir3->printNames();
+	}
+	catch (const std::runtime_error & e)
+	{
+		std::cout << e.what() << std::endl;
+	}
+
+	system("pause");
+	return 0;
+}
