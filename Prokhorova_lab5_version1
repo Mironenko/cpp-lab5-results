@@ -108,6 +108,16 @@ bool Directory::removeFile(std::string name)
 	return true;
 }
 
+class File : public FileItem
+{
+private:
+	std::string _data;
+public:
+	File() : FileItem() { }
+	File(std::string name) : FileItem(name) { }
+	~File() { }
+};
+
 int main()
 {
 	try 
