@@ -2,7 +2,21 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+
+
+class Error{
+		std::string inf;
+	
+	public: 
+		Error(std::string str){
+	 		inf = str;
+		}
+		what(){
+			std::cout << inf << '\n';
+		} 
+		~Error(){
+		}
+};
 
 
 class FileContent{
@@ -12,7 +26,6 @@ class FileContent{
 		FileContent(){
 			content = 0;
 		}
-		
 		~FileContent(){
 		}
 };
@@ -20,75 +33,83 @@ class FileContent{
 class SFile:protected FileContent{
 
 	public:
-		string name;
+		std::string fName;
 		
-		SFile(string str){
-			name = str;
+		SFile(std::string str){
+			fName = str;
 			FileContent();
 		}
-		
+		~SFile(){
+		}
 };
 
 class Directory{
 
-	vector<SFile*> FArr;
-	vector<Directory*> DArr;
+	std::vector<SFile*> FArr;
+	std::vector<Directory*> DArr;
 	
 	public:
-		string dName;
+		std::string dName;
 		
-		Directory(string str){
+		Directory(std::string str){
 			dName = str;
 		}
 		
-		void CreateDirectory(string name){
+		void CreateDirectory(std::string name){
 			Directory* dptr = new Directory(name);
 			DArr.push_back(dptr);
 		}
 		
-		void CreateFile(string fname){
+		void CreateFile(std::string fname){
 			SFile* fptr = new SFile(fname);
 			FArr.push_back(fptr);
 		}
 			
-		int FindDirectory(string target){
+		int FindDirectory(std::string target){
 			int i = 0;
-			while (DArr[i]->dName != target) i++;
+			while (DArr[i]->dName != target && i < DArr.size()) i++;
+			
+			if (DArr[i]->dName != target) 
+				throw Error("There is no such Directory");
 			return i;
 		}
 				
-		int FindFile(string target){
+		int FindFile(std::string target){
 			int i = 0;
-			while (FArr[i]->name != target) ++i;
+			while (FArr[i]->fName != target && i < FArr.size()) ++i;
+			
+			if (FArr[i]->fName != target) 
+				throw Error("There is no such File");
 			return i; 
 		}
 		
-		void DeleteFile(string fname){
+		void DeleteFile(std::string fname){
 			int index = FindFile(fname);
 			delete FArr[index];
 			FArr.erase(FArr.begin() + index);
 			
 		}
 		
-		void DeleteDirectory(string name){
+		void DeleteDirectory(std::string name){
 			int index = FindDirectory(name);
 			delete DArr[index];
 			DArr.erase(DArr.begin() + index);
 		}
 
-		void RM(string way);
-		Directory* operator/ (string name);
+		void RM(std::string way);
+		void ShowList();
+		Directory* operator/ (std::string name);
 				
 		~Directory(){
 				
 		}
 };
 
-Directory* Directory::operator/ (string name){
+Directory* Directory::operator/ (std::string name){
 	return DArr[FindDirectory(name)];
 }
 
-void Directory::RM(string way){
+void Directory::RM(std::string way){
 	
 	int number = 0;
 	for (int i = 0; i < way.size(); i++){
@@ -98,8 +119,8 @@ void Directory::RM(string way){
 	if (number){
 			
 	int i = 0;
-	string str;
-	string newway;
+	std::string str;
+	std::string newway;
 	
 	while (way[i] != '/'){
 		str += way[i];
@@ -121,17 +142,42 @@ void Directory::RM(string way){
 	}		
 }
 
+void Directory::ShowList(){
+	
+	std::cout << '/' << this->dName << std::endl;
+	if (FArr.size()) std::cout << "  Files:" << std::endl;
+	for (int i = 0; i < FArr.size(); i++){
+		std::cout << "   " << FArr[i]->fName << std::endl;
+	}
+	
+	if (DArr.size()) std::cout << "Directory:" << std::endl;
+	for (int i = 0; i < DArr.size(); i++){
+		DArr[i]->ShowList();
+	}
+
+}
+
 
 int main(){
-	
+	try{
+
 	Directory First("First");
-	
 	First.CreateFile("MyFile");
+	First.CreateFile("MyNewFile");
 	First.CreateDirectory("Second");
 	(First/"Second") -> CreateFile("MyFile2");
+	(First/"Second") -> CreateDirectory("Third");
+	
+	First.ShowList();
 	First.RM("Second/MyFile2");
-	First.RM("MyFile");
-
+	First.RM("MyNewFile");
+	
+	//First.FindFile("MyFile78");
+	std::cout << std::endl;
+	First.ShowList();
+	} catch(Error& e){
+		e.what();
+	}
 
 	return 0;
 }
