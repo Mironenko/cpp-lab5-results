@@ -1,0 +1,43 @@
+#include "stdafx.h"
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class file {
+	string name;
+	string data;
+public:
+	file() {}
+	~file() {}
+	file(string, string) {}
+	string getname();
+	void setname(string);
+	string getdata();
+	void setdata(string);
+};
+
+file::file() { name = "default"; data = "empty"; }
+file::file(string fname, string fdata) { name = fname; data = fdata; }
+string file::getname() { return name; }
+void file::setname(string fname) { name = fname; }
+string file::getdata() { return data; }
+void file::setdata(string fdata) { data = fdata; }
+
+
+class papka {
+	string Name;
+	vector<papka> pap;
+	vector<file> fil;
+public:
+	papka() {}
+	papka(string, int) {}
+	void show() {}
+};
+
+int main()
+{
+    return 0;
+}
+
