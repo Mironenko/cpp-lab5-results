@@ -1,0 +1,17 @@
+<----- manual ----->
+mkdir [name] //make new directory
+cd [name] //change directory
+list //show files in folder
+touch [name] //make new file
+open [name] //open file
+open -[link-name] //open file by link
+open->write //write into file
+open->write->[-q] //end of writing
+open->close //close file
+cat [name] //show file's text
+copy [name1] [name2] //copy [name1] into [name2]
+link [link-name] [file-name] //make link
+
+
+author: Vladislav S. IU8-24
+-end
