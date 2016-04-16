@@ -1,0 +1,142 @@
+// lab5_al.cpp: определяет точку входа для консольного приложения.
+//
+
+
+#include "iostream"
+#include "vector"
+
+using namespace std;
+
+class Fail {
+	string name;
+	int data;
+
+public: 
+	Fail();
+	Fail(string, int);
+	~Fail();
+	void setName(string);
+	string getName();
+	void setData(int);
+	int getData();
+};
+
+Fail::Fail() { name = "default"; data = 0; }
+Fail::Fail(string fname, int fdata) {
+	name = fname;
+	data = fdata;
+}
+Fail::~Fail() { cout << "dctor"; }
+int Fail::getData() { return data; }
+void Fail::setData(int fdata) { data = fdata; }
+string Fail::getName() { return name; }
+void Fail::setName(string fname) { name = fname; }
+
+class Directory {
+	string name;
+	vector<Directory> dir;
+	vector<Fail> fl;
+public:
+	Directory();
+	~Directory();
+	Directory(string);
+	void pushFail(Fail&);
+	void deleteFail(string);
+	void pushDirect(Directory&);
+	void deleteDirect(string);
+	friend ostream &operator<<(ostream&, Directory);
+	void printDirect();
+	void printFail();
+	string getName();
+	void searchF(string, Directory&);
+	void Directory::deleteDirect(Directory&); 
+
+  };
+
+string Directory::getName() {
+	return name;
+}
+
+Directory::Directory() {
+	name = "default";
+}
+Directory::~Directory() {
+	fl.clear();
+	dir.clear();
+}
+Directory::Directory(string dname) {
+	name = dname;
+}
+ostream &operator<<(ostream &stream, Directory obj) {
+	stream << obj.name;
+	return stream;
+}
+void Directory::printFail() {
+	for (Fail k : fl) {
+		cout << k.getName();
+	}
+}
+void Directory::pushFail(Fail &fail) {
+	fl.push_back(fail);
+}
+void Directory::deleteFail(string fname) {
+	int i = 0;
+	for (Fail k : fl) {
+		if (k.getName() == fname) {
+			fl.erase(fl.begin() + i);
+			break;
+		}
+		i++;
+	}
+}
+void Directory::deleteDirect(Directory& direct) {
+	fl.clear();
+	for (Directory k : dir) {
+		k.deleteDirect(k);	
+	}
+	dir.clear();
+}
+void Directory::deleteDirect(string dname) {	
+	for (Directory k : dir) {
+		if (k.getName() == dname) {
+			k.deleteDirect(k);
+			break;
+		}
+	}
+}
+void Directory::printDirect() {
+
+	cout << "Directories: " << endl;
+	for (Directory k : dir) {
+		cout << k.getName()<< endl;
+	}
+	cout << "Files: " << endl;
+	for (Fail k : fl) {
+		cout << k.getName() << endl;
+	}
+}
+void Directory::pushDirect(Directory &directory) {
+	dir.push_back(directory);
+}
+
+vector<Fail> spisok;
+void Directory::searchF(string fname, Directory& direct) {
+	
+	for (Fail k : fl) {
+		if (k.getName() == fname)
+			spisok.push_back(k);
+	}
+
+	for (Directory k : dir) {
+		k.searchF(fname, k);
+	}
+}
+
+
+
+
+int main()
+{
+    return 0;
+}
+
