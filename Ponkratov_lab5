@@ -1,0 +1,87 @@
+#include "stdafx.h"
+#include <stdlib.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+using namespace std;
+class directory;
+class File {
+public:
+	string name;
+	directory *parent;
+	
+};
+class directory {
+public:
+	string namee;
+	directory *parent;
+	vector <File> file;
+	vector <directory> direc;
+	void createF()
+	{
+		File f;
+		string namef;
+		f.parent = this;
+		cout << "name f:";
+		cin >> namef;
+		f.name = namef;
+		file.push_back(f);
+	}
+	void createD()
+	{
+		directory dir;
+		string named;
+		dir.parent = this;
+		cout << "name dir:";
+		cin >> named;
+		dir.namee = named;
+		direc.push_back(dir);
+	}
+	void list()
+	{
+		cout << "Folders:\n";
+		for (int i = 0; i < direc.size(); i++)
+		{
+			cout << direc[i].namee << endl;
+		}
+		cout << "Files:\n";
+		for (int i = 0; i < file.size(); i++)
+		{
+			cout << file[i].name << endl;
+		}
+	}
+	
+
+};
+directory cd(string a, directory& folder)
+{
+	for (int i = 0; i < folder.direc.size(); i++)
+	{
+		if (folder.direc[i].namee == a)
+			return folder.direc[i];
+	}
+}
+int main() 
+{
+	directory head;
+	head.namee = "boss";
+	string command;
+	string name;
+
+	while (command != "end")
+	{
+		cin >> command;
+		if (command == "mkdir")
+			head.createD();
+		if (command == "list")
+			head.list();
+		if (command == "touch")
+			head.createF();
+		if (command == "cd")
+		{
+			cin >> name;
+			head = cd(name, head);
+		}
+	}
+};
