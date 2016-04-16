@@ -114,7 +114,7 @@ public:
 	{//наxодит указанный файл внутри текущей директории, не заходя в лежащие в ней директории
 		for (int i = 0; i < filesNum(); i++)
 		{
-			if (files[i]->name == name_v)
+			if (files[i] && files[i]->name == name_v)
 				return true;
 		}
 	}
@@ -122,7 +122,7 @@ public:
 	{//наxодит указанную директорию внутри текущей, не заходя в лежащие в ней директории
 		for (int i = 0; i < dirsNum(); i++)
 		{
-			if (dirs[i]->name == name_v)
+			if (dirs[i] && dirs[i]->name == name_v)
 				return true;
 		}
 	}
