@@ -31,7 +31,6 @@ class fileNotClosedException : public exception {};
 class dumpUnsuccessfulException : public exception {};
 class directoryRemoveException : public exception {};
 
-
 //vfsunit
 //file : vfsunit
 //directory : vfsunit
