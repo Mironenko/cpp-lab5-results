@@ -45,6 +45,16 @@ int main() {
 				weak_ptr<MyFile> f = el;
 				cout << f.lock();
 			}*/
+		} else if (cmd == "cd") {
+			string args;
+			getline(cin, args);
+			args = args.substr(1, args.length());
+			if (args == "..")
+				current_dir = current_dir.lock()->get_parent_folder_ptr();
+			else {
+				/*vector<weak_ptr<FileSystemElement>> result = current_dir.lock()->find(args);
+				current_dir = result[0];*/
+			}
 		}
 	} while (cmd != "exit");
 	
