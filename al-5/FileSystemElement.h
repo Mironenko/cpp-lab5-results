@@ -16,6 +16,7 @@ public:
 	FileSystemElement(string name  = "default_name", weak_ptr<MyFolder> parent = shared_ptr<MyFolder>(nullptr));
 	~FileSystemElement(void);
 
+	string get_full_path(void) const;
 	friend ostream& operator<<(ostream& out_stream, const FileSystemElement& rhs);
 };
 

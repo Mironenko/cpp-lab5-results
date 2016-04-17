@@ -6,13 +6,25 @@ using namespace std;
 
 
 int main() {
-	shared_ptr<MyFolder> r = make_shared<MyFolder>("root");
-	shared_ptr<MyFolder> f1 = make_shared<MyFolder>("folder1", r);
-	shared_ptr<MyFolder> f2 = make_shared<MyFolder>("folder2", r);
-	shared_ptr<MyFile> fi1 = make_shared<MyFile>("text1", "file1", f1);
-	shared_ptr<MyFile> fi2 = make_shared<MyFile>("text2", "file2", f2);
+	string cmd;
+	string args = "";
 
-	r->list();
+	shared_ptr<MyFolder> root = make_shared<MyFolder>("~");
+	shared_ptr<MyFolder> f1 = make_shared<MyFolder>("folder1", root);
+	shared_ptr<MyFolder> f2 = make_shared<MyFolder>("folder2", root);
+	weak_ptr<MyFolder> current_dir = root;
+
+	do
+	{
+		cout << current_dir.lock()->get_full_path() << " $ ";
+		cin >> cmd;
+		if (cmd == "list") {
+			current_dir.lock()->list();
+		} else if (cmd == "touch") {
+			getline(cin ,args);
+			make_shared<MyFile>("test", args, current_dir);
+		}
+	} while (cmd != "exit");
 	
 	system("pause");
 	return 0;

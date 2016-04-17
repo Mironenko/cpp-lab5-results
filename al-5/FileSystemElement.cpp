@@ -23,3 +23,13 @@ ostream& operator<<(ostream& out_stream, const FileSystemElement& rhs) {
 
 	return out_stream;
 }
+
+
+string FileSystemElement::get_full_path(void) const {
+	string path;
+	if (name == "~")
+		path = name;
+	else
+		path = parent.lock()->get_full_path() + "/" + name;
+	return path;
+}
