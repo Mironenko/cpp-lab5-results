@@ -1,5 +1,4 @@
 #include <iostream>|
-//#include <string>
 #include "MyFolder.h"
 #include "MyFile.h"
 

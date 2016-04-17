@@ -26,16 +26,3 @@ void MyFolder::list(void) const {
 	for (it = element.cbegin(); it != element.cend(); it++)
 		cout << **it << endl;
 }
-
-
-void MyFolder::createFile(string name, string data) const {
-	make_shared<MyFile>(make_shared<MyFolder>(*this), name, data);
-
-	return;
-}
-
-
-void MyFolder::remove(FileSystemElement& el) {
-
-	return;
-}

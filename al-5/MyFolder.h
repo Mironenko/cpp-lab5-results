@@ -1,5 +1,5 @@
 #pragma once
-#include "filesystemelement.h"
+#include "FileSystemElement.h"
 #include <memory>
 #include <vector>
 
@@ -17,6 +17,4 @@ public:
 	void add_child(FileSystemElement& child);
 	FileSystemElement operator[](int i) { return *element[i]; }
 	void list(void) const;
-	void createFile(string name, string data) const;
-	void remove(FileSystemElement& el);
 };
