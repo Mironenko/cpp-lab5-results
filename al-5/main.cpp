@@ -17,19 +17,28 @@ int main() {
 	{
 		cout << current_dir.lock()->get_full_path() << " $ ";
 		cin >> cmd;
+
 		if (cmd == "ls") {
 			current_dir.lock()->list();
+
 		} else if (cmd == "touch") {
 			string args;
 			getline(cin, args);
 			make_shared<MyFile>(current_dir, args.substr(1, args.length()));
+
 		} else if (cmd == "mkdir") {
 			string args;
 			getline(cin, args);
 			make_shared<MyFolder>(current_dir, args.substr(1, args.length()));
+
+		} else if (cmd == "find") {
+			string args;
+			getline(cin, args);
+			vector<shared_ptr<FileSystemElement>> result = current_dir.lock()->find(args.substr(1, args.length()));
+			for (auto r : result)
+				cout << *r << endl;
 		}
 	} while (cmd != "exit");
 	
-	system("pause");
 	return 0;
 }

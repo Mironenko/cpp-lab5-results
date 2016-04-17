@@ -26,3 +26,13 @@ void MyFolder::list(void) const {
 	for (it = element.cbegin(); it != element.cend(); it++)
 		cout << **it << endl;
 }
+
+
+vector<shared_ptr<FileSystemElement>> MyFolder::find(string target_name) const {
+	vector<shared_ptr<FileSystemElement>> result;
+	for (auto el : element)
+		if (el->get_name() == target_name)
+			result.push_back(el);
+
+	return result;
+}

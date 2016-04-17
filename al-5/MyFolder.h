@@ -17,4 +17,5 @@ public:
 	void add_child(FileSystemElement& child);
 	FileSystemElement operator[](int i) { return *element[i]; }
 	void list(void) const;
+	vector<shared_ptr<FileSystemElement>> find(string target_name) const;
 };
