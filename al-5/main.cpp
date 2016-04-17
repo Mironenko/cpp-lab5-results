@@ -36,11 +36,15 @@ int main() {
 			getline(cin, args);
 			vector<weak_ptr<FileSystemElement>> result = current_dir.lock()->find(args.substr(1, args.length()));
 			for (auto r : result)
-				cout << *(r.lock()) << endl;
-		} else if (cmd == "rm") {
+				cout << r.lock()->get_name() << endl;
+		} else if (cmd == "cat") {
 			string args;
 			getline(cin, args);
-
+			vector<weak_ptr<FileSystemElement>> element = current_dir.lock()->find(args.substr(1, args.length()));
+			/*for (auto el : element) {
+				weak_ptr<MyFile> f = el;
+				cout << f.lock();
+			}*/
 		}
 	} while (cmd != "exit");
 	

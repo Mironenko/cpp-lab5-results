@@ -1,1 +1,1 @@
-class FolderNotEmpty {};
+class FolderIsNotEmpty {};

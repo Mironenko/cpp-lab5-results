@@ -25,7 +25,7 @@ void MyFolder::add_child(FileSystemElement& child) {
 void MyFolder::list(void) const {
 	std::vector<shared_ptr<FileSystemElement>>::const_iterator it;
 	for (it = element.cbegin(); it != element.cend(); it++)
-		cout << **it << endl;
+		cout << (*it)->get_name() << endl;
 }
 
 

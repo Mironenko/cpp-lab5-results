@@ -12,7 +12,7 @@ MyFile::~MyFile(void)
 
 
 ostream& operator<<(ostream& out_stream, const MyFile& rhs) {
-	cout << rhs.name << ": " << rhs.data;
+	cout << rhs.data;
 
 
 	return out_stream;
