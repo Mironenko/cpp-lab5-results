@@ -9,7 +9,7 @@ class MyFile :
 private:
 	string data;
 public:
-	MyFile(weak_ptr<MyFolder> parent = shared_ptr<MyFolder>(nullptr), string name = "blank_file", string data = "");
+	MyFile(shared_ptr<MyFolder> parent = shared_ptr<MyFolder>(nullptr), string name = "blank_file", string data = "");
 	~MyFile(void);
 
 	friend ostream& operator<<(ostream& out_stream, const MyFile& rhs);

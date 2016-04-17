@@ -10,7 +10,7 @@ class MyFolder :
 private:
 	vector<shared_ptr<FileSystemElement>> element;
 public:
-	MyFolder(weak_ptr<MyFolder> parent = make_shared<MyFolder>(nullptr), string name = "default_name");
+	MyFolder(shared_ptr<MyFolder> parent = make_shared<MyFolder>(nullptr), string name = "default_name");
 	~MyFolder(void);
 
 	weak_ptr<MyFolder> get_parent_folder_ptr(void) const;

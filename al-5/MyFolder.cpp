@@ -3,7 +3,7 @@
 #include "exceptions.h"
 
 
-MyFolder::MyFolder(weak_ptr<MyFolder> parent, string name) : FileSystemElement(parent, name) {
+MyFolder::MyFolder(shared_ptr<MyFolder> parent, string name) : FileSystemElement(parent, name) {
 }
 
 

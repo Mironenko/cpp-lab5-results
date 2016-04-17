@@ -6,9 +6,9 @@
 using namespace std;
 
 
-FileSystemElement::FileSystemElement(weak_ptr<MyFolder> parent, string name) : name(name), parent(parent) {
-	if (parent.lock() != shared_ptr<MyFolder>(nullptr)) {
-		parent.lock()->add_child(*this);
+FileSystemElement::FileSystemElement(shared_ptr<MyFolder> parent, string name) : name(name), parent(parent) {
+	if (parent != shared_ptr<MyFolder>(nullptr)) {
+		parent->add_child(*this);
 	}
 }
 
@@ -30,6 +30,6 @@ string FileSystemElement::get_full_path(void) const {
 	if (name == "~")
 		path = name;
 	else
-		path = parent.lock()->get_full_path() + "/" + name;
+		path = parent->get_full_path() + "/" + name;
 	return path;
 }
