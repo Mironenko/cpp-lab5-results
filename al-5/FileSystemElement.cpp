@@ -6,7 +6,7 @@
 using namespace std;
 
 
-FileSystemElement::FileSystemElement(string name, weak_ptr<MyFolder> parent_) : name(name), parent(parent_) {
+FileSystemElement::FileSystemElement(weak_ptr<MyFolder> parent, string name) : name(name), parent(parent) {
 	if (parent.lock() != shared_ptr<MyFolder>(nullptr)) {
 		parent.lock()->add_child(*this);
 	}

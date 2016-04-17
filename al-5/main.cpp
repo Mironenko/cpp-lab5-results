@@ -1,4 +1,5 @@
-#include <iostream>
+#include <iostream>|
+//#include <string>
 #include "MyFolder.h"
 #include "MyFile.h"
 
@@ -7,22 +8,26 @@ using namespace std;
 
 int main() {
 	string cmd;
-	string args = "";
 
-	shared_ptr<MyFolder> root = make_shared<MyFolder>("~");
-	shared_ptr<MyFolder> f1 = make_shared<MyFolder>("folder1", root);
-	shared_ptr<MyFolder> f2 = make_shared<MyFolder>("folder2", root);
+	shared_ptr<MyFolder> root = make_shared<MyFolder>(shared_ptr<MyFolder>(nullptr), "~");
+	shared_ptr<MyFolder> f1 = make_shared<MyFolder>(root, "folder1");
+	shared_ptr<MyFolder> f2 = make_shared<MyFolder>(root, "folder2");
 	weak_ptr<MyFolder> current_dir = root;
 
 	do
 	{
 		cout << current_dir.lock()->get_full_path() << " $ ";
 		cin >> cmd;
-		if (cmd == "list") {
+		if (cmd == "ls") {
 			current_dir.lock()->list();
 		} else if (cmd == "touch") {
-			getline(cin ,args);
-			make_shared<MyFile>("test", args, current_dir);
+			string args;
+			getline(cin, args);
+			make_shared<MyFile>(current_dir, args.substr(1, args.length()));
+		} else if (cmd == "mkdir") {
+			string args;
+			getline(cin, args);
+			make_shared<MyFolder>(current_dir, args.substr(1, args.length()));
 		}
 	} while (cmd != "exit");
 	

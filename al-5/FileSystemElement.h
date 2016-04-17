@@ -13,7 +13,7 @@ protected:
 	string name;
 	weak_ptr<MyFolder> parent;
 public:
-	FileSystemElement(string name  = "default_name", weak_ptr<MyFolder> parent = shared_ptr<MyFolder>(nullptr));
+	FileSystemElement(weak_ptr<MyFolder> parent = shared_ptr<MyFolder>(nullptr), string name = "default_name");
 	~FileSystemElement(void);
 
 	string get_full_path(void) const;

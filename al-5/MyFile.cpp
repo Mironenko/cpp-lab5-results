@@ -1,7 +1,7 @@
 #include "MyFile.h"
 
 
-MyFile::MyFile(string data, string name, weak_ptr<MyFolder> parent) : FileSystemElement(name, parent), data(data)
+MyFile::MyFile(weak_ptr<MyFolder> parent, string name, string data) : FileSystemElement(parent, name), data(data)
 {
 }
 

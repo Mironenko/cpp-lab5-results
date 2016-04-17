@@ -2,7 +2,7 @@
 #include "MyFile.h"
 
 
-MyFolder::MyFolder(string name, weak_ptr<MyFolder> parent) : FileSystemElement(name, parent) {
+MyFolder::MyFolder(weak_ptr<MyFolder> parent, string name) : FileSystemElement(parent, name) {
 }
 
 
@@ -29,7 +29,7 @@ void MyFolder::list(void) const {
 
 
 void MyFolder::createFile(string name, string data) const {
-	make_shared<MyFile>(data, name, make_shared<MyFolder>(*this));
+	make_shared<MyFile>(make_shared<MyFolder>(*this), name, data);
 
 	return;
 }
