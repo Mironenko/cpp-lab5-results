@@ -34,9 +34,13 @@ int main() {
 		} else if (cmd == "find") {
 			string args;
 			getline(cin, args);
-			vector<shared_ptr<FileSystemElement>> result = current_dir.lock()->find(args.substr(1, args.length()));
+			vector<weak_ptr<FileSystemElement>> result = current_dir.lock()->find(args.substr(1, args.length()));
 			for (auto r : result)
-				cout << *r << endl;
+				cout << *(r.lock()) << endl;
+		} else if (cmd == "rm") {
+			string args;
+			getline(cin, args);
+
 		}
 	} while (cmd != "exit");
 	
