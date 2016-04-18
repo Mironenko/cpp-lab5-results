@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include <map>
 using namespace std;
 //dynamin_poinnter_cast ???
 //vector <string> namesIOfDirs;
@@ -344,6 +345,14 @@ void deleteWithAddres(Directory* root, string adr)
 	delete[] names;
 }
 
+void go() {
+	cout << "goasjdhjsahdfkjh\n";
+}
+
+map<string, void (*)()> g_Commands = {
+	{"go", go},
+};
+
 
 int main()
 {
@@ -391,7 +400,10 @@ int main()
 	cout << "This is emulation of file system." << endl << "You are now in 'root'" << endl;
 	while (command != "finish")
 	{
+
+
 		cin >> command;
+		g_Commands[command]();
 		if (command == "mkdir") //создание директории
 		{
 			cin >> adr;
