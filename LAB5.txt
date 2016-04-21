@@ -1,0 +1,130 @@
+#include "stdafx.h"
+#include <cstring>
+#include <stdlib.h>
+#include <iostream>
+#include <list> //заголовочный файл контейнера списков
+using namespace std;
+
+void touch(); //добавление файла
+void ls(); //прочитать содержимое папки
+void mkdir(); //добавление папки
+void cd(); //переход в директорию
+
+//---------------------------------------------------
+class Papka //создаЄм класс ѕапка
+{
+public:
+	char* name;
+	char* Address;
+	void* previous;
+};
+//----------------------------------------------------
+class File : public Papka //создаЄм класс ‘айл, наследник класса ѕапка
+{
+public:
+	File(char* n, void* prev); //конструктор класса File
+
+};
+File::File(char* n, void* prev)
+{
+	this->name = new char[32];
+	this->Address = new char[1024];
+	this->previous = prev;
+	this->Address = "";
+	strcpy(this->name, n);
+	this->name[strlen(n)] = '\0';
+	
+	
+}
+//----------------------------------------------------
+class Directory : public Papka //создаем класс ƒиректори€, наследник класса ѕапка
+{
+public:
+	Directory(char* n, void* prev); //конструктор класса Directory
+	list <void*> next; //объ€вление списка
+	void* Child(char* n, char t);
+	void* GoBack();
+};
+Directory::Directory(char* n,void* prev)
+{
+	this->name = new char[64];
+	this->Address = new char[2048];
+	this->previous = prev;
+	strcpy(this->name,n);
+	this->name[strlen(n)]='\0';
+	this->next=*(new list <void*>());
+	if(prev != nullptr)
+	{
+	    strcpy(this->Address, ((Directory*)prev)->Address);
+		strcat(this->Address, "/");
+		strcat(this->Address, name);
+
+	}
+	else
+		this->Address="root";
+	
+}
+void* Directory::Child(char* n, char t)
+{
+	void* ret;
+	switch(t)
+	{
+	case 'd':
+		ret = new Directory(n, this);
+		break;
+	case 'f':
+		ret = new File(n, this);
+		break;
+	default:
+		return nullptr;
+	}
+	this->next.push_back(ret);
+	return ret;
+}
+void* Directory::GoBack()
+{
+if(this->previous != nullptr)
+	return this->previous;
+return nullptr;
+}
+//--------------------------------------
+class ShortCut:public Papka//создаем класс ярлык, наследник класса ѕапка
+{
+public:
+	ShortCut(char* n, void* prev);
+
+};
+ShortCut::ShortCut(char* n, void* prev)
+{
+	name = new char[64];
+	Address = new char[2048];
+	strcpy(name, n);
+	name[strlen(n)] = '\0';
+	prev = prev;
+	if (prev != nullptr)
+	{
+		strcpy(Address, ((Directory*)prev)->name);
+		strcat(Address, name);
+	}
+	else
+		Address = "root";
+}
+
+//---------------------------------------------------
+//---------------------------------------------------
+
+
+
+
+Directory* tempDir;
+int main()
+{
+	list <Directory> list1; //список файлов
+	char* cmd = new char[256]; //им€ команды
+	
+	delete cmd;
+
+	return 0;
+
+}
+

@@ -1,0 +1,164 @@
+#include "VFS.h"
+
+using namespace std;
+
+void touch();
+void ls();
+void mkdir();
+void cd();
+void rm();
+void write();
+void cat();
+Directory* tempDir;
+
+int main()
+{
+	list<Node> lst;					//список файлов
+	char* cmd = new char[256];		//имя команды
+	Directory root("root", nullptr);		//корневая папка
+	lst.push_front(root);
+	tempDir = &root;			//текущий каталог
+
+	while (strcmp(cmd, "q") != 0)
+	{
+ 		cout << tempDir->absAddress << ":";
+		cin >> cmd;
+		if (strcmp(cmd, "touch") == 0)
+		{
+			touch();
+			//cmd = "";
+			continue;
+		}
+		if (strcmp(cmd, "ls") == 0)
+		{
+			ls();
+			//cmd = "";
+			continue;
+		}
+		if (strcmp(cmd, "cd") == 0)
+		{
+			cd();
+			//cmd = "";
+			continue;
+		}
+		if (strcmp(cmd, "mkdir") == 0)
+		{
+			mkdir();
+			//cmd = "";
+			continue;
+		}
+		if (strcmp(cmd, "rm") == 0)
+		{
+			rm();
+			//cmd = "";
+			continue;
+		}
+		if (strcmp(cmd, "cat") == 0)
+		{
+			cat();
+			//cmd = "";
+			continue;
+		}
+		if (strcmp(cmd, "write") == 0)
+		{
+			write();
+			//cmd = "";
+			continue;
+		}
+	}
+	delete cmd;
+	return 0;
+}
+
+
+void touch() {
+	char name[32];
+	cin >> name;
+	for each (void* var in tempDir->next)
+	{
+		if (strcmp(name, ((Node *)var)->name) == 0)
+			return;
+	}
+	tempDir->MakeChild(name, 'f');
+	return;
+}
+
+void ls()
+{
+	for each (void* var in tempDir->next)
+	{
+		cout << ((Node*)var)->name << endl;
+	}
+	return;
+}
+
+void mkdir()
+{
+	char name[32];
+	cin >> name;
+	for each (void* var in tempDir->next)
+	{
+		if (strcmp(name, ((Node *)var)->name) == 0)
+			return;
+	}
+	tempDir->MakeChild(name, 'd');
+	return;
+}
+
+void cd()
+{
+	char name[32];
+	cin >> name;
+	if (strcmp(name, "..") == 0 && tempDir->prev != nullptr)
+	{
+		tempDir = (Directory*)tempDir->prev;
+		return;
+	}
+	for each (void* var in tempDir->next)
+	{
+		if (strcmp(((Directory*)var)->name, name) == 0 && ((Directory*)var)->type == 'd')
+		{
+			tempDir = (Directory*)var;
+			break;
+		}
+	}
+	return;
+}
+
+void rm()
+{
+	char name[32];
+	cin >> name;
+	tempDir->RemoveChild(name);
+	return;
+}
+
+void cat()
+{
+	char name[32];
+	cin >> name;
+	for each (void* var in tempDir->next)
+	{
+		if (strcmp(name, ((File *)var)->name) == 0)
+		{
+			((File *)var)->Cat();
+			return;
+		}
+	}
+	return;
+}
+
+void write()
+{
+	char name[32];
+	cin >> name;
+	for each (void* var in tempDir->next)
+	{
+		if (strcmp(name, ((File *)var)->name) == 0)
+		{
+			((File *)var)->Write();
+			return;
+		}
+	}
+	return;
+}

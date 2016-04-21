@@ -1,0 +1,64 @@
+#include "VFS.h"
+
+using namespace std;
+
+Directory::Directory(char* n, void* pr)
+{
+	this->type = 'd';
+	this->absAddress = new char[1024];
+	this->absAddress[0] = '\0';
+	this->name = new char[32];
+	strcpy(this->name, n);
+	this->prev = pr;
+	this->next = *(new list<void*>());
+	if (pr != nullptr)
+	{
+		strcpy(this->absAddress, ((Directory*)pr)->absAddress);
+		strcat(this->absAddress, "/");
+		strcat(this->absAddress, name);
+	}
+	else
+		this->absAddress = "root";
+}
+
+void Directory::MakeChild(char* n, char t)
+{
+	void* ret;
+	switch (t) {
+	case 'd':
+		ret = new Directory(n, this);
+		break;
+	case 'f':
+		ret = new File(n, this);
+		break;
+	case 's':
+		ret = new Shortcut(n, this);
+		break;
+	default:
+		return;
+	}
+	this->next.push_back(ret);
+	return;
+}
+
+void* Directory::GoBack()
+{
+	if (this->prev != nullptr)
+		return this->prev;
+	return nullptr;
+}
+
+void Directory::RemoveChild(char* name)
+{
+	File* tmpPtr;
+	for each (void* var in this->next)
+	{
+		if (strcmp(name, ((File *)var)->name) == 0)
+		{
+			tmpPtr = (File *)var;
+			break;
+		}
+	}
+	this->next.remove(tmpPtr);
+	return;
+}

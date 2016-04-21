@@ -1,0 +1,36 @@
+#include <list>
+#include <string>
+#include <stdlib.h>
+#include <iostream>
+
+using namespace std;
+
+class Node {
+public:
+	char type;
+	char* name;
+	char* absAddress;
+	void* prev;
+};
+
+class File : public Node {
+public:
+	char* content;
+	File(char* n, void* pr);
+	void Cat();
+	void Write();
+};
+
+class Directory : public Node {
+public:
+	list<void*> next;
+	Directory(char* n, void* pr);
+	void MakeChild(char* n, char t);
+	void* GoBack();
+	void RemoveChild(char* name);
+};
+
+class Shortcut : public Node {
+public:
+	Shortcut(char* n, void* pr);
+};
