@@ -1,0 +1,42 @@
+#include "VFS.h"
+
+File::File(char* n, void* pr)
+{
+	this->content = new char[1];
+	this->content[0] = '\0';
+	this->type = 'f';
+	this->absAddress = new char[1];
+	this->absAddress[0] = '\0';
+	this->name = new char[32];
+	strcpy(this->name, n);
+	this->prev = pr;
+	if (pr != nullptr)
+	{
+		strcat(this->absAddress, ((Directory*)pr)->absAddress);
+		strcat(this->absAddress, "/");
+		strcat(this->absAddress, this->name);
+	}
+	else
+		this->absAddress = "root";
+}
+
+void File::Cat()
+{
+	cout << this->content<<endl;
+	return;
+}
+
+void File::Write()
+{
+	std::string str;
+	cin.ignore();
+	while (true)
+	{
+		std::getline(std::cin, str);
+		if (str == "")
+			return;
+		str += "\n";
+		this->content = strcat(this->content, str.c_str());
+	}
+	return;
+}

@@ -1,0 +1,17 @@
+#include "VFS.h"
+
+Shortcut::Shortcut(char* n, void* pr)
+{
+	absAddress = new char[1024];
+	name = new char[32];
+	strcpy(name, n);
+	name[strlen(n)] = '\0';
+	prev = pr;
+	if (pr != nullptr)
+	{
+		strcpy(absAddress, ((Directory*)pr)->name);
+		strcat(absAddress, name);
+	}
+	else
+		absAddress = "root";
+}
