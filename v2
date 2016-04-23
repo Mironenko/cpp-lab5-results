@@ -1,0 +1,198 @@
+#include "stdafx.h"
+#include <iostream>
+#include <stdlib.h>
+#include <vector>
+#include <string>
+#include <memory.>
+#include <clocale>
+#include <windows.h>
+#include <conio.h>
+#include <stdio.h>
+#include <iomanip>
+#include <fstream>
+#include <istream>
+#include <ostream>
+#include <sstream>
+
+using namespace std;
+
+class File_S
+{
+
+     public:
+	  File_S() {};
+	 
+	  
+	  shared_ptr<File_S> Name(shared_ptr<File_S> name) {
+		 
+			 
+		 // return std::make_shared<File_S>(name);
+		  return name;
+	  };
+
+	  virtual ~File_S() {};
+};
+
+class File : public File_S
+{  protected:
+	int contents;
+	
+   public:
+	   File() {};
+	  
+	 
+	  
+	virtual  ~File() {};
+};
+
+
+class Directory : public File_S
+{  protected:
+
+	string name_D;
+	vector<shared_ptr<File_S>> files;
+	
+  public:
+	Directory() {};
+
+	Directory(string name) { name_D = name; };
+	Directory(int n) 
+	{
+		;
+	};
+   
+	void createDirectory(shared_ptr<Directory>& file)  //добавление директории
+		{
+			files.push_back(dynamic_pointer_cast<File_S>(file));
+		
+		}
+	
+	void createFile(shared_ptr<File>& file, int n=0)   //добавление файла
+	{
+
+		files.push_back(dynamic_pointer_cast<File_S>(file));
+
+	}
+		
+	void list() {
+        shared_ptr<File_S> name;
+		for (int i = 0; i < files.size(); i++) {
+			cout << files[i]->Name(name) << endl;
+		}
+	}
+
+
+	/*vector<shared_ptr<File_S>> list() 
+		{ 
+			return files ;
+		}
+*/
+	void deleteFile(int n)   // удаление файла по индексу
+	{
+		
+        files.erase(files.begin() + n);
+	};
+
+	shared_ptr<File_S> findFile(int n) // поиск элемента по индексу
+	{   
+		return files.at(n);
+	}
+	
+};
+
+
+class Label : public File_S
+{
+  protected:
+     string name;
+
+	File *ptrf;
+	Directory *ptrd;
+
+public:
+	Label() {
+		name = "Ярлык";
+	}
+
+	void open_label() {
+		// додедлать!
+	}
+
+
+	  ~Label() {};
+};
+
+
+
+
+int _tmain(int argc, _TCHAR* argv[])
+{   
+	string s;
+	string name;
+	//int contents;
+	
+   
+	setlocale(LC_ALL, "rus");
+	Directory default;   //создание директории по умолчанию
+	//default.see_d_name();
+
+	cout << "Cписок команд:\n mkdir - создание директории \n cd - изменение текущей директории \n touch - создание файла \n chmod - установка прав доступа \n open - открытие файла \n write - запись в файл \n close - закрыть файл \n find - найти файл по названию \n list - получение списка файлов в текущей директории \n rm - удаление файла \n lsr - рекурсивное перечисление файлов в директории" << endl;
+	cout << "Для выхода нажмите ` \n" << endl;
+
+	do
+	{
+		cin >> s;
+
+		if (s == "touch")
+		{
+			cin>>name; // ввод имени файла для создания
+			auto name1 = std::make_shared<File> (name);
+			default.createFile(name1);
+			cout << "Файл создан" << endl;
+		}
+
+		/*if (s == "list") {
+		    default.see_all_file();
+		}*/
+
+		/*if (s == "list")
+		{
+		
+			default.list();
+		}*/
+
+		//if (s == "open") {
+		//	cout << "Введите имя файла: " << endl;
+		//	cin >> name;
+		// auto name1 = std::make_shared<File> (name);
+		//	default.openfile(name);
+		//}
+
+		//if (s == "write") {
+		//	cin >> name;
+		//auto name1 = std::make_shared<File>(name);
+		//	cout << "что знаписать в файл: ";
+		//	cin >> contents;
+		//	default.record(name, contents);
+		//}
+
+		//if (s == "rm") {
+		//	cin >> name;
+		//auto name1 = std::make_shared<File> (name);
+		//	default.deleteFile(name);
+		//}
+
+
+
+	} while (s != "`");
+	// mkdir /dir1/dir2/dir3   пример ввода от пользователя
+    
+	
+	
+
+
+
+
+	system("pause");
+}
+
