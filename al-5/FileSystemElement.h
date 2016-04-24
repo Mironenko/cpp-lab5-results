@@ -14,7 +14,7 @@ protected:
 	shared_ptr<MyFolder> parent;
 public:
 	FileSystemElement(shared_ptr<MyFolder> parent = shared_ptr<MyFolder>(nullptr), string name = "default_name");
-	~FileSystemElement(void);
+	virtual ~FileSystemElement(void);
 
 	string get_name(void) const { return name; }
 

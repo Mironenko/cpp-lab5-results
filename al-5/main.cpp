@@ -1,4 +1,4 @@
-#include <iostream>|
+#include <iostream>
 #include "MyFolder.h"
 #include "MyFile.h"
 
@@ -25,7 +25,7 @@ int main() {
 			string args;
 			getline(cin, args);
 			make_shared<MyFile>(current_dir.lock(), args.substr(1, args.length()));
-
+			 
 		} else if (cmd == "mkdir") {
 			string args;
 			getline(cin, args);
@@ -41,10 +41,12 @@ int main() {
 			string args;
 			getline(cin, args);
 			vector<weak_ptr<FileSystemElement>> element = current_dir.lock()->find(args.substr(1, args.length()));
-			/*for (auto el : element) {
-				weak_ptr<MyFile> f = el;
-				cout << f.lock();
-			}*/
+			for (auto el : element) {
+				cout << el.lock() << "\t" << typeid(el.lock()).name() << endl;
+
+				weak_ptr<MyFile> f = dynamic_pointer_cast<MyFile>(el.lock());
+				cout << f.lock() << "\t" <<  typeid(f.lock()).name() << endl;
+			}
 		} else if (cmd == "cd") {
 			string args;
 			getline(cin, args);
