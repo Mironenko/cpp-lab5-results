@@ -58,11 +58,16 @@ public:
 		return finder;
 	}
 	//delete
-       void  Delete_File(shared_ptr<File>&file)
+       void  Delete_File(string filename)
 	{
-		file.reset();
-		cout << "File was deleted"<<endl;
-	}
+	 for (auto i = Files.begin(); i != Files.end(); ++i) 
+             {
+               if ((*i)->name == filename) 
+                      {
+                               Files.erase(i);
+                               break;
+                                 cout <<"\n"<< "File was deleted" << endl;
+                 	}
 	   //file's content
 	   void FileContent(string filename)
 	   {
@@ -106,7 +111,7 @@ int main()
 		directory2->addFile(file3);
 		cout << "File 3 was added" << endl;
 	    directory2->Find_File("my file3");
-		directory2->Delete_File(file3);
+		directory2->Delete_File("my file2");
 		directory1->FileContent("my file1");
 		directory1->FileCopy("my file1");
     return 0;
