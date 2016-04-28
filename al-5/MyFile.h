@@ -4,7 +4,7 @@
 #include <memory>
 
 class MyFile :
-	public FileSystemElement
+	public FileSystemElement, public enable_shared_from_this<MyFile>
 {
 private:
 	string data;

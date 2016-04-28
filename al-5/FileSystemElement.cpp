@@ -7,9 +7,6 @@ using namespace std;
 
 
 FileSystemElement::FileSystemElement(shared_ptr<MyFolder> parent, string name) : name(name), parent(parent) {
-	if (parent != shared_ptr<MyFolder>(nullptr)) {
-		parent->add_child(dynamic_cast<FileSystemElement&>(*this));
-	}
 }
 
 

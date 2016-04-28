@@ -7,7 +7,7 @@
 using namespace std;
 
 class MyFolder;
-class FileSystemElement
+class FileSystemElement 
 {
 protected:
 	string name;

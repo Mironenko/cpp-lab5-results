@@ -4,6 +4,10 @@
 
 
 MyFolder::MyFolder(shared_ptr<MyFolder> parent, string name) : FileSystemElement(parent, name) {
+	if (parent != shared_ptr<MyFolder>(nullptr)) {
+		cout << "*this:\t" << typeid(*this).name() << endl;
+		parent->add_child(dynamic_pointer_cast<FileSystemElement>(shared_from_this()));
+	}
 }
 
 
@@ -15,8 +19,10 @@ MyFolder::~MyFolder(void)
 weak_ptr<MyFolder> MyFolder::get_parent_folder_ptr(void) const { return parent; }
 
 
-void MyFolder::add_child(FileSystemElement& child) {
-	element.push_back(make_shared<FileSystemElement>(child));
+void MyFolder::add_child(const shared_ptr<FileSystemElement> child) {
+	cout << "child:\t" << typeid(*child).name() << endl;
+	element.push_back(child);
+	cout << "*element[]:\t" << typeid(*element.back()).name() << endl;
 
 	return;
 }
