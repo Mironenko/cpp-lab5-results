@@ -3,16 +3,10 @@
 #include "exceptions.h"
 
 
-MyFolder::MyFolder(shared_ptr<MyFolder> parent, string name) : FileSystemElement(parent, name) {
-	if (parent) {
-		///parent->add_child(this);
-	}
-}
+MyFolder::MyFolder(shared_ptr<MyFolder> parent, string name) : FileSystemElement(parent, name) {}
 
 
-MyFolder::~MyFolder(void)
-{
-}
+MyFolder::~MyFolder(void) {}
 
 
 weak_ptr<MyFolder> MyFolder::get_parent_folder_ptr(void) const { return parent; }

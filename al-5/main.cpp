@@ -29,7 +29,7 @@ int main() {
 		} else if (cmd == "mkdir") {
 			string args;
 			getline(cin, args);
-			make_shared<MyFolder>(current_dir.lock(), args.substr(1, args.length()));
+			MyFolder::createFolder(current_dir.lock(), args.substr(1, args.length()));
 
 		} else if (cmd == "find") {
 			string args;

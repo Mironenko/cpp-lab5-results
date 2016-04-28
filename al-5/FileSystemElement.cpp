@@ -6,13 +6,10 @@
 using namespace std;
 
 
-FileSystemElement::FileSystemElement(shared_ptr<MyFolder> parent, string name) : name(name), parent(parent) {
-}
+FileSystemElement::FileSystemElement(shared_ptr<MyFolder> parent, string name) : name(name), parent(parent) {}
 
 
-FileSystemElement::~FileSystemElement(void)
-{
-}
+FileSystemElement::~FileSystemElement(void) {}
 
 
 ostream& operator<<(ostream& out_stream, const FileSystemElement& rhs) {
