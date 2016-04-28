@@ -9,9 +9,6 @@ MyFolder::MyFolder(shared_ptr<MyFolder> parent, string name) : FileSystemElement
 MyFolder::~MyFolder(void) {}
 
 
-weak_ptr<MyFolder> MyFolder::get_parent_folder_ptr(void) const { return parent; }
-
-
 void MyFolder::add_child(shared_ptr<FileSystemElement> child) {
 	element.push_back(child);
 
