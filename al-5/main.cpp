@@ -24,7 +24,7 @@ int main() {
 		} else if (cmd == "touch") {
 			string args;
 			getline(cin, args);
-			make_shared<MyFile>(current_dir.lock(), args.substr(1, args.length()));
+			MyFile::createFile(current_dir.lock(), args.substr(1, args.length()));
 			 
 		} else if (cmd == "mkdir") {
 			string args;
