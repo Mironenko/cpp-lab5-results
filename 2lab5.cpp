@@ -11,9 +11,8 @@
 using namespace std;
 
 class file {
-public:
 	string name, data;
-
+public:
 	file(string a) {
 		name = a;
 		data = "no_data";
@@ -29,12 +28,12 @@ public:
 		getline(cin, data);
 	}
 
+	friend class dir;
 };
 
 class dir {
-public:
 	string name;
-
+public:
 	dir(string a) {
 		name = a;
 		parent = nullptr;
