@@ -1,8 +1,6 @@
 #include <iostream>
 #include <stdio.h>
-#include <iomanip>
 #include <string>
-#include <fstream>
 #include <vector>
 
 using namespace std;
@@ -137,10 +135,15 @@ public:
 		vector<File>(f).swap(f);
 
 	}
-
+	
+	int find_d(vector<Directory> d, string s){
+		for(int i=0; i<d.size();i++){
+			if(d[i].d_name()==s) return i;
+		}
+		
+	}
 };
 
-int find_d(vector<Directory>, string);
 
 int main(){
 
@@ -166,8 +169,8 @@ int main(){
 			cout << "Имя нового файла: " << endl; cin >> name;
 			dir[j].create_file(name);
 		}
-        if (s == "touchl"){
-			cout << "Введите имя файла, ярлык для которого надо создать: "; cin >> name;
+        	if (s == "touchl"){
+			cout << "Введите имя файла, ярлык для которого нужно создать: "; cin >> name;
 			dir[j].create_label(name, dir[j].return_ptr(name));
 		}
 		if (s == "list"){
@@ -181,18 +184,18 @@ int main(){
 
 		if (s == "write"){
 			cout << "Имя файла: "; cin >> name;
-			cout << "Что записать в файл: "; cin >> content;
+			cout << "Содержание файла: "; cin >> content;
 			dir[j].record(name, content);
 		}
 
-        if (s == "copy"){
-            cout << "Имя копируемого файла: " << endl; cin >> name;
-            name+=" copy";
-            dir[j].create_file(name);
-        }
+	        if (s == "copy"){
+        	cout << "Имя копируемого файла: " << endl; cin >> name;
+            	name+=" copy";
+            	dir[j].create_file(name);
+        	}
 		if (s == "rm"){
-            cout << "Для удаления файла введите пароль суперпользователя: "; cin >> pass;
-            if(pass=="qwerty"){
+            	cout << "Для удаления файла введите пароль суперпользователя: "; cin >> pass;
+            	if(pass=="qwerty"){
 			cout << "Имя удаляемого файла: ";	cin >> name;
 			dir[j].delete_file(name);
 			}
@@ -217,9 +220,9 @@ int main(){
 			}
 		}
 		if (s == "deldir"){
-            cout << "Для удаления файла введите пароль суперпользователя: "; cin >> pass;
-            if(pass=="qwerty"){
-			cout << "Имя директории, которую удалить:"; cin >> name;
+        	cout << "Для удаления директории введите пароль суперпользователя: "; cin >> pass;
+            	if(pass=="qwerty"){
+			cout << "Имя директории, которую нужно удалить:"; cin >> name;
 			dir.erase(dir.begin() + find_d(dir,name));
 			vector<Directory>(dir).swap(dir);
 			cout << "Удалено";
@@ -231,10 +234,4 @@ int main(){
 }while (s != "!");
 
 return 0;
-}
-
-int find_d( vector<Directory> d, string s){
-	for (int i = 0; i < d.size(); i++){
-		if (d[i].d_name()==s) return i;
-	}
 }
