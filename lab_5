@@ -1,0 +1,133 @@
+#include "stdafx.h"
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class file {
+	string name;
+	string data;
+public:
+	file();
+	~file() {};
+	file(string, string);
+	string getname();
+	void setname(string);
+	string getdata();
+	void setdata(string);
+};
+
+file::file() { name = "default"; data = "empty"; }
+file::file(string fname, string fdata) { name = fname; data = fdata; }
+string file::getname() { return name; }
+void file::setname(string fname) { name = fname; }
+string file::getdata() { return data; }
+void file::setdata(string fdata) { data = fdata; }
+
+
+class Directory {
+	string name;
+	vector<Directory> dir;
+	vector<file> fl;
+public:
+	Directory();
+	~Directory();
+	Directory(string);
+	void pushfile(file&);
+	void deletefile(string);
+	void pushDirect(Directory&);
+	void deleteDirect(string);
+	friend ostream &operator<<(ostream&, Directory);
+	void printDirect();
+	void printfile();
+	string getName();
+	void searchF(string, Directory&);
+	void Directory::deleteDirect(Directory&);
+
+};
+
+string Directory::getName() {
+	return name;
+}
+
+Directory::Directory() {
+	name = "default";
+}
+Directory::~Directory() {
+	fl.clear();
+	dir.clear();
+}
+Directory::Directory(string dname) {
+	name = dname;
+}
+ostream &operator<<(ostream &stream, Directory obj) {
+	stream << obj.name;
+	return stream;
+}
+void Directory::printfile() {
+	for (file k : fl) {
+		cout << k.getname();
+	}
+}
+void Directory::pushfile(file &file) {
+	fl.push_back(file);
+}
+void Directory::deletefile(string fname) {
+	int i = 0;
+	for (file k : fl) {
+		if (k.getname() == fname) {
+			fl.erase(fl.begin() + i);
+			break;
+		}
+		i++;
+	}
+}
+void Directory::deleteDirect(Directory& direct) {
+	fl.clear();
+	for (Directory k : dir) {
+		k.deleteDirect(k);
+	}
+	dir.clear();
+}
+void Directory::deleteDirect(string dname) {
+	for (Directory k : dir) {
+		if (k.getName() == dname) {
+			k.deleteDirect(k);
+			break;
+		}
+	}
+}
+void Directory::printDirect() {
+
+	cout << "Directories: " << endl;
+	for (Directory k : dir) {
+		cout << k.getName() << endl;
+	}
+	cout << "Files: " << endl;
+	for (file k : fl) {
+		cout << k.getname() << endl;
+	}
+}
+void Directory::pushDirect(Directory &directory) {
+	dir.push_back(directory);
+}
+
+vector<file> spisok;
+void Directory::searchF(string fname, Directory& direct) {
+
+	for (file k : fl) {
+		if (k.getname() == fname)
+			spisok.push_back(k);
+	}
+
+	for (Directory k : dir) {
+		k.searchF(fname, k);
+	}
+}
+
+
+int main()
+{
+    return 0;
+}
