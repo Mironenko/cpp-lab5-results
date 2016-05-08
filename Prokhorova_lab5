@@ -1,0 +1,730 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <fstream>
+
+using namespace std;
+
+class Directory;
+class File;
+class Label;
+
+class FileItem
+{
+protected:
+	string _name;
+	Directory* _parent; 
+	static void set_parent(Directory* parent, FileItem* child) { child->_parent = parent; }
+public:
+	FileItem(string name) : _name(name) { }
+	string getName() const { return _name; }
+	Directory* get_parent() const { return _parent; }
+	void getFullName(vector<string>& fullname) const;
+	virtual void remove() = 0;
+	virtual ~FileItem() = 0; 
+};
+
+class Directory : public FileItem
+{
+private:
+	vector<File*> _files;
+	vector<Directory*> _directories;
+	vector<Label*> _labels;
+public:
+	Directory(string name) : FileItem(name) { }
+	void addFile(File* file);
+	void addDirectory(Directory* directory);
+	void addLabel(Label* label);
+	vector<File*> listOfFiles() const { return _files; };
+	vector<Directory*> listOfDirectories() const { return _directories; };
+	vector<Label*> listOfLabels() const { return _labels; };
+	Directory* findDirectory(string name) const;
+	File* findFile(string name) const;
+	Label* findLabel(string name) const;
+	void printNames() const;
+	void removeFile(string name);
+	void removeLabel(string name);
+	void removeDirectory(string name);
+	void remove();
+	void checkName(string name) const;
+	~Directory();
+};
+
+class File : public FileItem
+{
+private:
+	vector<string> _data;
+public:
+	File(string name) : FileItem(name) { }
+	void Write();
+	void View() const;
+	void remove() { _data.clear(); _parent->removeFile(_name); _parent = nullptr; }
+	~File() { _data.clear(); _parent->removeFile(_name); _parent = nullptr; }
+};
+
+class Label: public FileItem
+{
+private:
+	FileItem* _item;
+public:
+	Label(string name) : FileItem(name), _item(nullptr) { }
+	void addReference(FileItem* item);
+	FileItem* getReference(); 
+	void remove() { _parent->removeLabel(_name); }
+	~Label() { }
+};
+
+class FileManager
+{
+private:
+	Directory* _root;
+	Directory* _current;
+	File* _currentFile;
+	bool _isAdmin;
+	bool _isBlocked;
+public:
+	FileManager(string name = "Root");
+	FileItem* findItem(vector<string> names, Directory* root, int counter = 0);
+	void showTree(Directory* root, ofstream & ofs, int counter = 0);
+	void remove_r(string fullname, Directory* root);
+	void remove(string name);
+	void setRights(bool admin) { _isAdmin = admin; }
+	bool getRights() const { return _isAdmin; }
+	void changeDirectory(string fullname);
+	void makeDirectory(string fullname) const;
+	void makeFile(string fullname) const;
+	void makeLabel(string nameOfLabel, string fullNameOfRef);
+	void setBlockedState(bool st) { _isBlocked = st; }
+	bool isBlocked() const { return _isBlocked; }
+	void open(string name);
+	void write();
+	void close();
+	void list() const;
+	void dump(string filename);
+	Directory* getCurrentDirectory() const { return _current; }
+	void showFullName() const;
+	~FileManager() { delete _root; }
+};
+
+vector<string> &split(const string &s, char delim, vector<string> &elems);
+vector<string> split(const string &s, char delim);
+vector<string> ParsePath(string fullname);
+void CheckName(string name);
+void checkSize(int size, int requiredSize);
+
+int main()
+{
+	FileManager fileManager;
+	string str;
+	vector<string> commands;
+
+	while (true)
+	{
+		try
+		{
+			if (!fileManager.isBlocked())
+			{
+				fileManager.showFullName();
+				getline(cin, str);
+				commands = split(str, ' ');
+				if (commands[0] == "exit")
+					break;
+				if (commands[0] == "cd")
+				{
+					checkSize(commands.size(), 2);
+					fileManager.changeDirectory(commands[1]);
+				}
+				else if (commands[0] == "mkdir")
+				{
+					checkSize(commands.size(), 2);
+					fileManager.makeDirectory(commands[1]);
+					cout << "Added new directory: " << commands[1] << endl;
+				}
+				else if (commands[0] == "mkfile")
+				{
+					checkSize(commands.size(), 2);
+					fileManager.makeFile(commands[1]);
+					cout << "Added new file: " << commands[1] << endl;
+				}
+				else if (commands[0] == "mklabel")
+				{
+					checkSize(commands.size(), 3);
+					fileManager.makeLabel(commands[1], commands[2]);
+					cout << "Added new label " << commands[1] << endl;
+				}
+				else if (commands[0] == "open")
+				{
+					checkSize(commands.size(), 2);
+					fileManager.open(commands[1]);
+					fileManager.setBlockedState(true);
+				}
+				else if (commands[0] == "write")
+				{
+					checkSize(commands.size(), 1);
+					fileManager.write();
+				}
+				else if (commands[0] == "close")
+				{
+					checkSize(commands.size(), 1);
+					fileManager.close();
+				}
+				else if (commands[0] == "rm")
+				{
+					checkSize(commands.size(), 2);
+					fileManager.remove(commands[1]);
+				}
+				else if (commands[0] == "list")
+				{
+					checkSize(commands.size(), 1);
+					fileManager.list();
+				}
+				else if (commands[0] == "chmod")
+				{
+					checkSize(commands.size(), 2);
+					if (commands[1].size() != 1 && commands[1][0] != '0' && commands[1][0] != '1')
+						cout << "Incorrect operation.\n";
+					fileManager.setRights(atoi(commands[1].data()));
+				}
+				else if (commands[0] == "dump")
+				{
+					checkSize(commands.size(), 2);
+					fileManager.dump(commands[1]);
+				}
+				else
+					throw logic_error("Incorrect operation");
+			}
+			else
+			{
+				getline(cin, str);
+				commands = split(str, ' ');
+				if (commands[0] == "open")
+				{
+					checkSize(commands.size(), 2);
+					fileManager.open(commands[1]);
+				}
+				else if (commands[0] == "write")
+				{
+					checkSize(commands.size(), 1);
+					fileManager.write();
+				}
+				else if (commands[0] == "close")
+				{
+					checkSize(commands.size(), 1);
+					fileManager.close();
+					fileManager.setBlockedState(false);
+				}
+			}
+		}
+		catch (const exception & e)
+		{
+			cout << "ERROR: " << e.what() << endl;
+		}
+	}
+
+	system("pause");
+	return 0;
+}
+
+void FileItem::getFullName(vector<string>& fullname) const
+{
+	fullname.insert(fullname.begin(), _name);
+	if (_parent)
+		_parent->getFullName(fullname);
+}
+
+void FileItem::remove() { }
+
+FileItem::~FileItem() { }
+
+void Directory::addFile(File * file)
+{
+	checkName(file->getName());
+	_files.push_back(file);
+	set_parent(this, file);
+}
+
+void Directory::addDirectory(Directory * directory)
+{
+	checkName(directory->getName());
+	_directories.push_back(directory);
+	directory->_parent = this;
+}
+
+void Directory::addLabel(Label * label)
+{
+	checkName(label->getName());
+	_labels.push_back(label);
+	set_parent(this, label);
+}
+
+Directory* Directory::findDirectory(string name) const
+{
+	for (int i = 0; i < _directories.size(); i++)
+	{
+		if (_directories[i]->_name == name)
+			return _directories[i];
+	}
+	return nullptr;
+}
+
+File* Directory::findFile(string name) const
+{
+	for (int i = 0; i < _files.size(); i++)
+	{
+		if (_files[i]->getName() == name)
+			return _files[i];
+	}
+	return nullptr;
+}
+
+Label * Directory::findLabel(string name) const
+{
+	for (int i = 0; i < _labels.size(); i++)
+	{
+		if (_labels[i]->getName() == name)
+			return _labels[i];
+	}
+	return nullptr;
+}
+
+void Directory::printNames() const
+{
+	std::cout << "Directories:\n";
+	for (int i = 0; i < _directories.size(); i++)
+		cout << _directories[i]->_name << std::endl;
+	std::cout << "Files:\n";
+	for (int i = 0; i < _files.size(); i++)
+		cout << _files[i]->getName() << std::endl;
+	std::cout << "Labels:\n";
+	for (int i = 0; i < _labels.size(); i++)
+		cout << _labels[i]->getName() << std::endl;
+}
+
+void Directory::removeFile(string name)
+{
+	for (int i = 0; i < _files.size(); i++)
+	{
+		if (_files[i]->getName() == name)
+		{
+			_files.erase(_files.begin() + i);
+			return;
+		}
+	}
+	throw runtime_error("File is not found");
+}
+
+void Directory::removeLabel(string name)
+{
+	for (int i = 0; i < _labels.size(); i++)
+	{
+		if (_labels[i]->getName() == name)
+		{
+			_labels.erase(_labels.begin() + i);
+			return;
+		}
+	}
+	throw runtime_error("Label is not found");
+}
+
+void Directory::removeDirectory(string name)
+{
+	for (int i = 0; i < _directories.size(); i++)
+	{
+		if (_directories[i]->_name == name)
+		{
+			_directories.erase(_directories.begin() + i);
+			return;
+		}
+	}
+	throw runtime_error("Directory is not found");
+}
+
+void Directory::remove()
+{
+	_files.clear();
+	_labels.clear();
+	for (int i = 0; i < _directories.size(); i++)
+		_directories[i]->remove();
+	_parent->removeDirectory(_name);
+}
+
+void Directory::checkName(string name) const
+{
+	for (int i = 0; i < _directories.size(); i++)
+	{
+		if (_directories[i]->getName() == name)
+			throw logic_error("Item with this name is already exist");
+	}
+	for (int i = 0; i < _files.size(); i++)
+	{
+		if (_files[i]->getName() == name)
+			throw logic_error("Item with this name is already exist");
+	}
+	for (int i = 0; i < _labels.size(); i++)
+	{
+		if (_labels[i]->getName() == name)
+			throw logic_error("Item with this name is already exist");
+	}
+}
+
+Directory::~Directory()
+{
+	for (int i = 0; i < _files.size(); i++)
+		delete _files[i];
+	_files.clear();
+	for (int i = 0; i < _labels.size(); i++)
+		delete _labels[i];
+	_labels.clear();
+	for (int i = 0; i < _directories.size(); i++)
+		delete _directories[i];
+	_directories.clear();
+}
+
+void File::Write()
+{
+	cout << "Enter command 'EOF' if you have added all information in file.\n";
+	int i = 0;
+	string str;
+	getline(cin, str);
+	while (str != "EOF")
+	{
+		_data.push_back(str);
+		getline(cin, str);
+	}
+	cout << "Enter command 'write' if you want to add information in file; 'close' if you want to close file.\n";
+}
+
+void File::View() const
+{
+	for (int i = 0; i < _data.size(); i++)
+		cout << _data[i] << endl;
+	cout << "Enter command 'write' if you want to add information in file; 'close' if you want to close file.\n";
+}
+
+void Label::addReference(FileItem * item)
+{
+	Label* label = dynamic_cast<Label*>(item);
+	if (label)
+		throw invalid_argument("Label cannot refer to a label");
+	_item = item;
+}
+
+FileItem * Label::getReference()
+{
+	if (_item == nullptr)
+		return nullptr;
+	if (_item->get_parent() != nullptr)
+		return _item;
+	else
+		return (_item = nullptr);
+}
+
+FileItem* FileManager::findItem(vector<string> names, Directory* root, int counter)
+{
+	if (counter >= names.size())
+		return nullptr;
+
+	if (counter == 0)
+	{
+		if (root->getName() == names[0])
+		{
+			if (names.size() == 1)
+				return root;
+			counter++;
+		}
+		else
+			return nullptr;
+	}
+
+	if (counter == names.size() - 1)
+		for (int i = 0; i < root->listOfFiles().size(); i++)
+			if (root->listOfFiles()[i]->getName() == names[counter])
+				return root->listOfFiles()[i];
+
+	for (int i = 0; i < root->listOfDirectories().size(); i++)
+		if (root->listOfDirectories()[i]->getName() == names[counter])
+		{
+			if (counter == names.size() - 1)
+				return root->listOfDirectories()[i];
+			return FileManager::findItem(names, root->listOfDirectories()[i], ++counter);
+		}
+
+	return nullptr;
+}
+
+void FileManager::showTree(Directory* root, ofstream & ofs, int counter)
+{
+	if (counter == 0)
+		ofs << root->getName() << endl;
+
+	string tabs(counter + 1, '   ');
+
+	for (int i = 0; i < root->listOfFiles().size(); i++)
+	{
+		ofs << tabs << root->listOfFiles()[i]->getName() << endl;
+	}
+
+	for (int i = 0; i < root->listOfLabels().size(); i++)
+	{
+		ofs << tabs << root->listOfLabels()[i]->getName() << endl;
+	}
+
+	for (int i = 0; i < root->listOfDirectories().size(); i++)
+	{
+		ofs << tabs << root->listOfDirectories()[i]->getName() << endl;
+		showTree(root->listOfDirectories()[i], ofs, ++counter);
+	}
+	return;
+}
+
+void FileManager::remove_r(string fullname, Directory* root)
+{
+	findItem(ParsePath(fullname), root)->remove();
+}
+
+void FileManager::remove(string name)
+{
+	vector<string> names = ParsePath(name);
+	if (names.size() == 1)
+	{
+		Directory* dir = _current->findDirectory(name);
+		if (dir)
+		{
+			if (_isAdmin)
+				dir->remove();
+			else
+				throw logic_error("You have no rights to remove directory");
+		}
+		else
+		{
+			File* file = _current->findFile(name);
+			if (file)
+				file->remove();
+			else
+			{
+				Label* label = _current->findLabel(name);
+				if (!label)
+					throw logic_error("Item has not found");
+				label->remove();
+			}
+		}
+	}
+	else
+	{
+		FileItem* item = findItem(names, _root);
+		if (!item)
+			throw logic_error("Item has not found");
+		Directory* dir = dynamic_cast<Directory*>(item);
+		if (dir)
+		{
+			if (_isAdmin)
+			{
+				vector<string> currnames;
+				_current->getFullName(currnames);
+				bool isEqual = true;
+				if (currnames.size() >= names.size())
+				{
+					for (int i = 0; i < names.size(); i++)
+					{
+						if (names[i] != currnames[i])
+						{
+							isEqual = false;
+							break;
+						}
+					}
+				}
+				if (isEqual)
+					_current = dir->get_parent();
+				dir->remove();
+			}
+			else
+				throw logic_error("You have no rights to remove directory");
+		}
+		else
+		{
+			File* file = dynamic_cast<File*>(item);
+			if (file)
+				file->remove();
+			else
+			{
+				Label* label = dynamic_cast<Label*>(item);
+				label->remove();
+			}
+		}
+	}
+}
+
+void FileManager::changeDirectory(string fullname)
+{
+	vector<string> names = ParsePath(fullname);
+
+	if (names.size() == 1 && !_current->get_parent())
+	{
+		Directory* temp = _current->findDirectory(fullname);
+		if (!temp)
+			throw logic_error("Wrong path");
+		_current = temp;
+		return;
+	}
+	Directory* root;
+	if (names[0] == _root->getName())
+		root = _root;
+	else
+	{
+		root = _current;
+		names.insert(names.begin(), _current->getName());
+	}
+
+	FileItem* item = findItem(names, root);
+	if (!item)
+		throw runtime_error("Wrong path");
+	Directory* dir = dynamic_cast<Directory*>(item);
+	if (!dir)
+		throw invalid_argument("Invalid path");
+	_current = dir;
+}
+
+void FileManager::makeDirectory(string name) const
+{
+	CheckName(name);
+	_current->addDirectory(new Directory(name));
+}
+
+void FileManager::makeFile(string name) const
+{
+	CheckName(name);
+	_current->addFile(new File(name));
+}
+
+void FileManager::makeLabel(string nameOfLabel, string fullNameOfRef)
+{
+	CheckName(nameOfLabel);
+	Label* label = new Label(nameOfLabel);
+	FileItem* item = findItem(ParsePath(fullNameOfRef), _root);
+	if (!item)
+		throw logic_error("Object to which label refer has not found");
+	label->addReference(item);
+	_current->addLabel(label);
+}
+
+void FileManager::open(string name)
+{
+	File* file = _current->findFile(name);
+	if (file)
+	{
+		if (_currentFile)
+			throw logic_error("File is already opened");
+		file->View();
+		_currentFile = file;
+	}
+	else
+	{
+		Label* label = _current->findLabel(name);
+		if (label)
+		{
+			FileItem* item = label->getReference();
+			if (!item)
+				throw logic_error("Null label");
+			File* f = dynamic_cast<File*>(label->getReference());
+			if (f)
+			{
+				if (_currentFile)
+					throw logic_error("File is already opened");
+				f->View();
+				_currentFile = f;
+			}
+			else
+				_current = dynamic_cast<Directory*>(label->getReference());
+		}
+		else
+		{
+			Directory* dir = _current->findDirectory(name);
+			if (!dir)
+				throw logic_error("Wrong name of argument in \"open\"");
+			_current = dir;
+		}
+	}
+}
+
+void FileManager::write()
+{
+	if (!_currentFile)
+		throw logic_error("There is not any opened file");
+	_currentFile->Write();
+}
+
+void FileManager::close()
+{
+	if (!_currentFile)
+		throw logic_error("There is not any opened file");
+	_currentFile = nullptr;
+}
+
+void FileManager::list() const
+{
+	_current->printNames();
+}
+
+void FileManager::dump(string filename)
+{
+	ofstream fout(filename);
+	showTree(_root, fout);
+	fout.close();
+}
+
+void FileManager::showFullName() const
+{
+	vector<string> name;
+	_current->getFullName(name);
+	int i;
+	for (i = 0; i < name.size() - 1; i++)
+		cout << name[i] << '\\';
+	cout << name[i];
+	cout << ">";
+}
+
+FileManager::FileManager(string name)
+{
+	_root = new Directory(name + ':');
+	_current = _root;
+	_currentFile = nullptr;
+	_isAdmin = false;
+	_isBlocked = false;
+}
+
+vector<string> &split(const string &s, char delim, vector<string> &elems)
+{
+	stringstream ss(s);
+	string item;
+	while (getline(ss, item, delim))
+		elems.push_back(item);
+	return elems;
+}
+
+vector<string> split(const string &s, char delim)
+{
+	vector<string> elems;
+	split(s, delim, elems);
+	return elems;
+}
+
+vector<string> ParsePath(string fullname)
+{
+	vector<string> names = split(fullname, '\\');
+	if (names.size() == 0)
+		names.push_back(fullname);
+	return names;
+}
+
+void CheckName(string name)
+{
+	if (name.find(':') != string::npos)
+		throw invalid_argument("Incorrect name");
+}
+
+void checkSize(int size, int requiredSize)
+{
+	if (size != requiredSize)
+		throw invalid_argument("Incorrect operation.\n");
+}
